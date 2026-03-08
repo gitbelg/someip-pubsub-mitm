@@ -1,0 +1,36 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    networks:
+      someip_net:
+        ipv4_address: 172.20.0.101
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+    tty: true
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: client
+    networks:
+      someip_net:
+        ipv4_address: 172.20.0.102
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+    stdin_open: true
+    tty: true
+    depends_on:
+      - server
+
+networks:
+  someip_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
