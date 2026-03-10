@@ -6,10 +6,11 @@ services:
       target: server
     networks:
       someip_net:
-        ipv4_address: 172.20.0.101
+        ipv4_address: 192.168.0.101
     cap_add:
       - NET_ADMIN
     privileged: true
+    stdin_open: true
     tty: true
 
   client:
@@ -19,7 +20,7 @@ services:
       target: client
     networks:
       someip_net:
-        ipv4_address: 172.20.0.102
+        ipv4_address: 192.168.0.102
     cap_add:
       - NET_ADMIN
     privileged: true
@@ -28,9 +29,32 @@ services:
     depends_on:
       - server
 
+  attacker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: attacker
+    networks:
+      someip_net:
+        ipv4_address: 192.168.0.104
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+    tty: true
+    environment:
+      - INTERFACE=eth0
+      - BROADCAST_IP=224.224.224.245
+      - TIMEOUT=120
+      - DEBUG=True
+    depends_on:
+      - server
+      - client
+    profiles:
+      - donotstart # Prevents starting by default
+
 networks:
   someip_net:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/24
+        - subnet: 192.168.0.0/24

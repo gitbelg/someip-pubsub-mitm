@@ -14,6 +14,11 @@ RUN apt-get update && apt-get install -y \
     iproute2 \
     net-tools \
     iputils-ping \
+    python3 \
+    python3-scapy \
+    python3-pip \
+    tcpdump \
+    && pip3 install debugpy \
     && rm -rf /var/lib/apt/lists/*
 
 # Install vsomeip
@@ -49,5 +54,12 @@ WORKDIR /app
 COPY --from=builder /app/src/build/radio_client /app/
 COPY client/radio-client.json /app/
 COPY client/entrypoint.sh /app/
+RUN chmod +x /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+FROM base AS attacker
+WORKDIR /app
+# Copy the attacker scripts we moved earlier
+COPY attacker/ /app/
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]
