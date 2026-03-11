@@ -1,10 +1,25 @@
-# SOME/IP Publish-Subscribe Man-in-the-Middle Attack
+# SOME/IP Publish/ Subscribe Man-in-the-Middle Attack
 
 This project demonstrates a Man-in-the-Middle (MITM) attack against a SOME/IP Publish/Subscribe architecture using Scapy. It consists of a simulated Radio Service (Server), a Control Panel (Client), and an Attacker.
 
 ## Architecture & Attack Summary
 
 ![Attack Flow](attack.png)
+
+### Scientific Background
+This implementation is a practical demonstration of the vulnerability described in section **5.3 "Attack on Publish/Subscribe"** of the research paper:
+**"Analyzing and Securing SOME/IP Automotive Services with Formal and Practical Methods"**  
+*Published in: Proceedings of the 14th ACM Conference on Security and Privacy in Wireless and Mobile Networks (WiSec '21)*  
+[Read the paper here](https://dl.acm.org/doi/fullHtml/10.1145/3465481.3465748)
+
+The attack was originally discovered using the formal verification tool **Tamarin**. It exploits the lack of authenticity in SOME/IP Service Discovery (SD) messages. By sending spoofed `OfferService` and `StopSubscribeEventgroup` packets "as fast as possible," an attacker can hijack the subscription relationship, forcing the client to send its data to the attacker while simultaneously unsubscribing the client from the legitimate server.
+
+### Technical Dependencies
+The environment is self-contained via Docker, but utilizes the following key technologies:
+*   **[vsomeip](https://github.com/COVESA/vsomeip):** An implementation of SOME/IP used by the server and client.
+*   **[Scapy](https://scapy.net/):** A powerful Python-based interactive packet manipulation program used for the attacker script.
+*   **[debugpy](https://github.com/microsoft/debugpy):** Used for remote Python debugging inside the container.
+*   **Docker & Docker Compose:** For network orchestration and containerization.
 
 The network consists of three Docker containers:
 *   **Radio Service (Server):** `192.168.0.101`
